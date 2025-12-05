@@ -2,12 +2,13 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-
+#include <functional>
 
 struct IdRange
 {
     size_t from, to;
 };
+
 
 std::vector<IdRange> parseFile(std::string const& name)
 {
@@ -32,22 +33,6 @@ std::vector<IdRange> parseFile(std::string const& name)
     return results;
 }
 
-bool isDoubled(size_t n)
-{
-    std::string s = std::to_string(n);
-
-    if (s.length() % 2 == 1)
-        return false;
-    
-    const int halfLength = s.length() / 2;
-    for (int i = 0; i < halfLength; i++)
-    {
-        if (s[i] != s[i+halfLength])
-            return false;
-    }
-
-    return true;
-}
 
 bool isRepeatedNTimes(std::string const& s, int n)
 {
@@ -72,6 +57,13 @@ bool isRepeatedNTimes(std::string const& s, int n)
     return true;
 }
 
+
+bool isDoubled(size_t n)
+{
+    return isRepeatedNTimes(std::to_string(n), 2);
+}
+
+
 bool isRepeated(size_t n)
 {
     std::string s = std::to_string(n);
@@ -85,42 +77,27 @@ bool isRepeated(size_t n)
     return false;
 }
 
-size_t sumOfDoubled(std::vector<IdRange> const& ranges)
+
+size_t sumUnderPredicate(std::vector<IdRange> const& ranges, std::function<bool(size_t)> predicate)
 {
     size_t sum = 0;
     for (auto const& r : ranges)
     {
         for (size_t n = r.from; n <= r.to; n++)
         {
-            if (isDoubled(n))
+            if (predicate(n))
                 sum += n;
         }
     }
     return sum;
 }
 
-size_t sumOfRepeated(std::vector<IdRange> const& ranges)
-{
-    size_t sum = 0;
-    for (auto const& r : ranges)
-    {
-        for (size_t n = r.from; n <= r.to; n++)
-        {
-            if (isRepeated(n))
-                sum += n;
-        }
-    }
-    return sum;
-}
 
 int main(int, char**)
 {
     auto ranges = parseFile("../input.txt");
-    size_t sum1 = sumOfDoubled(ranges);
-    size_t sum2 = sumOfRepeated(ranges);
-
-    isRepeated(121212);
-
+    size_t sum1 = sumUnderPredicate(ranges, isDoubled);
+    size_t sum2 = sumUnderPredicate(ranges, isRepeated);
 
     std::cout << sum1 << "\n" << sum2 << std::endl;
 }
