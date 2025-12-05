@@ -49,6 +49,42 @@ bool isDoubled(size_t n)
     return true;
 }
 
+bool isRepeatedNTimes(std::string const& s, int n)
+{
+    if (s.length() % n != 0)
+        return false;
+    
+    const int partLength = s.length() / n;
+
+    for (int i = 0; i < partLength; i++)
+    {
+        char ref = s[i];
+
+        bool matches = true;
+        for (int j = 1; j < n; j++)
+        {
+            if (s[i + j*partLength] != ref)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool isRepeated(size_t n)
+{
+    std::string s = std::to_string(n);
+
+    for (int times = 2; times <= s.length(); times++)
+    {
+        if (isRepeatedNTimes(s, times))
+            return true;
+    }
+
+    return false;
+}
+
 size_t sumOfDoubled(std::vector<IdRange> const& ranges)
 {
     size_t sum = 0;
@@ -63,10 +99,28 @@ size_t sumOfDoubled(std::vector<IdRange> const& ranges)
     return sum;
 }
 
+size_t sumOfRepeated(std::vector<IdRange> const& ranges)
+{
+    size_t sum = 0;
+    for (auto const& r : ranges)
+    {
+        for (size_t n = r.from; n <= r.to; n++)
+        {
+            if (isRepeated(n))
+                sum += n;
+        }
+    }
+    return sum;
+}
+
 int main(int, char**)
 {
     auto ranges = parseFile("../input.txt");
-    size_t sum = sumOfDoubled(ranges);
+    size_t sum1 = sumOfDoubled(ranges);
+    size_t sum2 = sumOfRepeated(ranges);
 
-    std::cout << sum << std::endl;
+    isRepeated(121212);
+
+
+    std::cout << sum1 << "\n" << sum2 << std::endl;
 }
